@@ -51,6 +51,8 @@
  */
 final class ArcanistPyLintLinter extends ArcanistLinter {
 
+  private $rcfile = null;
+
   private function getMessageCodeSeverity($code) {
     $config = $this->getEngine()->getConfigurationManager();
 
@@ -175,7 +177,11 @@ final class ArcanistPyLintLinter extends ArcanistLinter {
     // Specify an --rcfile, either absolute or relative to the project root.
     // Stupidly, the command line args above are overridden by rcfile, so be
     // careful.
-    $rcfile = $config->getConfigFromAnySource('lint.pylint.rcfile');
+    $rcfile = $this->rcfile;
+    if ($rcfile == null) {
+        $rcfile = $config->getConfigFromAnySource('lint.pylint.rcfile');
+    }
+
     if ($rcfile !== null) {
       $rcfile = Filesystem::resolvePath(
         $rcfile,
@@ -191,11 +197,37 @@ final class ArcanistPyLintLinter extends ArcanistLinter {
 
     return implode(' ', $options);
   }
+  public function setRCFile($new_rcfile) {
+    $this->rcfile = $new_rcfile;
+    return $this;
+  }
+  public function setLinterConfigurationValue($key, $value) {
+    switch ($key) {
+      case 'pylint.rcfile':
+        $this->setRCFile($value);
+        return;
+    }
 
+    return parent::setLinterConfigurationValue($key, $value);
+  }
+  public function getLinterConfigurationOptions() {
+    $options = array(
+      'pylint.rcfile' => array(
+        'type' => 'optional string',
+        'help' => pht(
+          'The pylint rc file to use for this linter.  Any value here will '.
+          'override anything specified in the arcconfig'),
+      ),
+    );
+
+    return $options + parent::getLinterConfigurationOptions();
+  }
   public function getLinterName() {
     return 'PyLint';
   }
-
+  public function getLinterConfigurationName() {
+    return 'pylint';
+  }
   private function getLinterVersion() {
     $pylint_bin = $this->getPyLintPath();
     $options = '--version';
