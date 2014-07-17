@@ -327,7 +327,7 @@ EOTEXT
         }
       }
 
-      if ($this->branchType != $this->ontoType) {
+      /**if ($this->branchType != $this->ontoType) {
         throw new ArcanistUsageException(pht(
           'Source %s is a %s but destination %s is a %s. When landing a '.
           '%s, the destination must also be a %s. Use --onto to specify a %s, '.
@@ -339,7 +339,7 @@ EOTEXT
           $this->branchType,
           $this->branchType,
           $this->branchType));
-      }
+      }*/
     }
 
     if ($this->isGit) {
@@ -785,9 +785,11 @@ EOTEXT
         // to the collapse when using --collapse with --keep,
         // so we manually move them to the correct spots
         // see: http://bz.selenic.com/show_bug.cgi?id=3716
-        $repository_api->execxLocal(
-          'bookmark -f %s',
-          $this->onto);
+        if ($repository_api->isBookmark($this->onto)) {
+            $repository_api->execxLocal(
+              'bookmark -f %s',
+              $this->onto);
+        }
 
         $repository_api->execxLocal(
           'bookmark -f %s -r %s',
