@@ -3,7 +3,7 @@
 /**
  * Installable as an SVN "pre-commit" hook.
  */
-final class ArcanistSvnHookPreCommitWorkflow extends ArcanistBaseWorkflow {
+final class ArcanistSvnHookPreCommitWorkflow extends ArcanistWorkflow {
 
   public function getWorkflowName() {
     return 'svn-hook-pre-commit';
@@ -217,7 +217,7 @@ EOTEXT
         "errors to disable lint for that file.\n\n");
       echo phutil_console_wrap($msg);
 
-      $renderer = new ArcanistLintConsoleRenderer();
+      $renderer = new ArcanistConsoleLintRenderer();
       foreach ($failures as $result) {
         echo $renderer->renderLintResult($result);
       }

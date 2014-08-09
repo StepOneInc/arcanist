@@ -3,7 +3,7 @@
 /**
  * Quickly create a task.
  */
-final class ArcanistTodoWorkflow extends ArcanistBaseWorkflow {
+final class ArcanistTodoWorkflow extends ArcanistWorkflow {
 
   public function getWorkflowName() {
     return 'todo';
@@ -48,6 +48,9 @@ EOTEXT
         'param'  => 'project',
         'repeat' => true,
         'help'   => pht('Projects to assign to the task.'),
+      ),
+      'browse' => array(
+        'help' => pht('After creating the task, open it in a web browser.'),
       ),
     );
   }
@@ -108,6 +111,11 @@ EOTEXT
       $result['id'],
       $result['title'],
       $result['uri']);
+
+    if ($this->getArgument('browse')) {
+      $this->openURIsInBrowser(array($result['uri']));
+    }
+
   }
 
 }

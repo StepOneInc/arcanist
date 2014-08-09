@@ -214,7 +214,13 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
   }
 
   public function getCanonicalRevisionName($string) {
-    throw new ArcanistCapabilityNotSupportedException($this);
+    // TODO: This could be more accurate, but is only used by `arc browse`
+    // for now.
+
+    if (is_numeric($string)) {
+      return $string;
+    }
+    return null;
   }
 
   public function getSVNBaseRevisionNumber() {
@@ -272,6 +278,8 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
   }
 
   public function buildDiffFuture($path) {
+    $root = phutil_get_library_root('arcanist');
+
     // The "--depth empty" flag prevents us from picking up changes in
     // children when we run 'diff' against a directory. Specifically, when a
     // user has added or modified some directory "example/", we want to return
@@ -279,8 +287,9 @@ final class ArcanistSubversionAPI extends ArcanistRepositoryAPI {
     // without "--depth empty", svn will give us changes to the directory
     // itself (such as property changes) and also give us changes to any
     // files within the directory (basically, implicit recursion). We don't
-    // want that, so prevent recursive diffing.
-    $root = phutil_get_library_root('arcanist');
+    // want that, so prevent recursive diffing. This flag does not work if the
+    // directory is newly added (see T5555) so we need to filter the results
+    // out later as well.
 
     if (phutil_is_windows()) {
       // TODO: Provide a binary_safe_diff script for Windows.
