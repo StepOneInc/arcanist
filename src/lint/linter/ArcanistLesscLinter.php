@@ -20,17 +20,19 @@ final class ArcanistLesscLinter extends ArcanistExternalLinter {
   private $strictUnits = false;
 
   public function getInfoName() {
-    return pht('Less');
+    return 'CSS pre-processor';
   }
 
   public function getInfoURI() {
-    return 'https://lesscss.org/';
+    return 'http://lesscss.org/';
   }
 
   public function getInfoDescription() {
     return pht(
-      'Use the `--lint` mode provided by `lessc` to detect errors in Less '.
-      'source files.');
+      'Use the `%s` mode provided by `%s` to detect errors in '.
+      'Less source files.',
+      '--lint',
+      'lessc');
   }
 
   public function getLinterName() {
@@ -98,22 +100,7 @@ final class ArcanistLesscLinter extends ArcanistExternalLinter {
   }
 
   public function getInstallInstructions() {
-    return pht('Install lessc using `npm install -g less`.');
-  }
-
-  public function shouldExpectCommandErrors() {
-    return true;
-  }
-
-  public function supportsReadDataFromStdin() {
-    // Technically `lessc` can read data from standard input however, when doing
-    // so, relative imports cannot be resolved. Therefore, this functionality is
-    // disabled.
-    return false;
-  }
-
-  public function getReadDataFromStdinFilename() {
-    return '-';
+    return pht('Install lessc using `%s`.', 'npm install -g less');
   }
 
   protected function getMandatoryFlags() {
@@ -121,7 +108,8 @@ final class ArcanistLesscLinter extends ArcanistExternalLinter {
       '--lint',
       '--no-color',
       '--strict-math='.($this->strictMath ? 'on' : 'off'),
-      '--strict-units='.($this->strictUnits ? 'on' : 'off'));
+      '--strict-units='.($this->strictUnits ? 'on' : 'off'),
+    );
   }
 
   protected function parseLinterOutput($path, $err, $stdout, $stderr) {
@@ -168,9 +156,10 @@ final class ArcanistLesscLinter extends ArcanistExternalLinter {
             break;
 
           default:
-            throw new RuntimeException(pht(
-              'Unrecognized lint message code "%s".',
-              $code));
+            throw new RuntimeException(
+              pht(
+                'Unrecognized lint message code "%s".',
+                $code));
         }
 
         $code = $this->getLintCodeFromLinterConfigurationKey($matches['name']);
@@ -186,10 +175,6 @@ final class ArcanistLesscLinter extends ArcanistExternalLinter {
 
         $messages[] = $message;
       }
-    }
-
-    if ($err && !$messages) {
-      return false;
     }
 
     return $messages;

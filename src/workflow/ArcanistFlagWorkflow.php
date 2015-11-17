@@ -57,18 +57,18 @@ EOTEXT
     return array(
       '*' => 'objects',
       'clear' => array(
-        'help' => 'Delete the flag on an object.',
+        'help' => pht('Delete the flag on an object.'),
       ),
       'edit' => array(
-        'help' => 'Edit the flag on an object.',
+        'help' => pht('Edit the flag on an object.'),
       ),
       'color' => array(
         'param' => 'color',
-        'help' => 'Set the color of a flag.',
+        'help' => pht('Set the color of a flag.'),
       ),
       'note' => array(
         'param' => 'note',
-        'help' => 'Set the note on a flag.',
+        'help' => pht('Set the note on a flag.'),
       ),
     );
   }
@@ -88,7 +88,12 @@ EOTEXT
       // Make sure notes that are long or have line breaks in them or
       // whatever don't mess up the formatting.
       $note = implode(' ', preg_split('/\s+/', $note));
-      $note = ' ('.phutil_utf8_shorten($note, 40, '...').')';
+      $note = ' ('.
+        id(new PhutilUTF8StringTruncator())
+        ->setMaximumGlyphs(40)
+        ->setTerminator('...')
+        ->truncateString($note).
+        ')';
     }
     echo phutil_console_format(
       "<fg:{$color}>%s</fg> flag%s $verb!\n",
@@ -109,10 +114,11 @@ EOTEXT
     $editing = $edit || ($color != -1) || $note;
 
     if ($editing && $clear) {
-      throw new ArcanistUsageException("You can't both edit and clear a flag.");
+      throw new ArcanistUsageException(
+        pht("You can't both edit and clear a flag."));
     }
     if (($editing || $clear) && count($objects) != 1) {
-      throw new ArcanistUsageException('Specify exactly one object.');
+      throw new ArcanistUsageException(pht('Specify exactly one object.'));
     }
 
     if (!empty($objects)) {
@@ -126,7 +132,9 @@ EOTEXT
         if (isset($handles[$object])) {
           $phids[$object] = $handles[$object]['phid'];
         } else {
-          echo phutil_console_format("**%s** doesn't exist.\n", $object);
+          echo pht(
+            "%s doesn't exist.\n",
+            phutil_console_format('**%s**', $object));
         }
       }
       if (empty($phids)) {
@@ -148,7 +156,9 @@ EOTEXT
           'objectPHID' => head($phids),
         ));
       if (!$flag) {
-        echo phutil_console_format("**%s** has no flag to clear.\n", $object);
+        echo pht(
+          "%s has no flag to clear.\n",
+          phutil_console_format('**%s**', $object));
       } else {
         self::flagWasEdited($flag, 'deleted');
       }
@@ -181,7 +191,9 @@ EOTEXT
         'objectPHID');
       foreach ($phids as $object => $phid) {
         if (!isset($flags[$phid])) {
-          echo phutil_console_format("**%s** has no flag.\n", $object);
+          echo pht(
+            "%s has no flag.\n",
+            phutil_console_format('**%s**', $object));
         }
       }
 
@@ -191,7 +203,7 @@ EOTEXT
         // If the user passed object names, we already told them all their
         // objects are nonexistent or unflagged.
         if (empty($objects)) {
-          echo "You have no flagged objects.\n";
+          echo pht('You have no flagged objects.')."\n";
         }
       } else {
         // Print ALL the flags. With fancy formatting. Because fancy formatting

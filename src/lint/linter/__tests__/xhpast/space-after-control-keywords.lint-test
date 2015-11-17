@@ -1,4 +1,5 @@
 <?php
+
 if($x) {}
 else{}
 for(;;) {}
@@ -14,44 +15,52 @@ if  ($x) {}
 if
 
 ($x) {}
-if ($x)
+if ($x) {
   echo 100;
-else
+} else {
   echo 10;
-do
+}
+do {
   echo 1;
-while(true);
+} while(true);
+
+try {} catch(Exception $ex) {}
 ~~~~~~~~~~
-warning:2:1
 warning:3:1
+warning:3:10
 warning:4:1
 warning:5:1
 warning:6:1
 warning:7:1
-warning:7:6
 warning:8:1
-warning:13:3
+warning:8:6
+warning:9:1
+warning:10:11
+warning:11:16
 warning:14:3
-warning:23:1
+warning:15:3
+warning:25:3
+warning:27:8
 ~~~~~~~~~~
 <?php
-if ($x) {}
-else {}
+
+if ($x) {} else {}
 for (;;) {}
 foreach ($x as $y) {}
 while ($x) {}
 do {} while ($x);
 switch ($x) {}
-if ($x) {}
-else if ($y) {}
-else if ($z) {}
+if ($x) {} else if ($y) {} else if ($z) {}
 
 if ($x) {}
 if ($x) {}
-if ($x)
+if ($x) {
   echo 100;
-else
+} else {
   echo 10;
-do
+}
+do {
   echo 1;
-while (true);
+} while (true);
+
+try {} catch (Exception $ex) {}

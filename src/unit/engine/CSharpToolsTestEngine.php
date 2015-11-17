@@ -37,15 +37,20 @@ final class CSharpToolsTestEngine extends XUnitTestEngine {
     // Determine coverage path.
     if ($this->cscoverHintPath === null) {
       throw new Exception(
-        "Unable to locate cscover. Configure it with ".
-        "the `unit.csharp.coverage.binary' option in .arcconfig");
+        pht(
+          "Unable to locate %s. Configure it with the '%s' option in %s.",
+          'cscover',
+          'unit.csharp.coverage.binary',
+          '.arcconfig'));
     }
     $cscover = $this->projectRoot.DIRECTORY_SEPARATOR.$this->cscoverHintPath;
     if (file_exists($cscover)) {
       $this->coverEngine = Filesystem::resolvePath($cscover);
     } else {
       throw new Exception(
-        'Unable to locate cscover coverage runner (have you built yet?)');
+        pht(
+          'Unable to locate %s coverage runner (have you built yet?)',
+          'cscover'));
     }
   }
 
@@ -133,7 +138,8 @@ final class CSharpToolsTestEngine extends XUnitTestEngine {
     return array(
       $future,
       $assembly_dir.DIRECTORY_SEPARATOR.$xunit_temp,
-      $cover_temp);
+      $cover_temp,
+    );
   }
 
   /**
@@ -195,7 +201,8 @@ final class CSharpToolsTestEngine extends XUnitTestEngine {
       $results[] = array(
         'file' => $tag->getAttribute('file'),
         'start' => $tag->getAttribute('start'),
-        'end' => $tag->getAttribute('end'));
+        'end' => $tag->getAttribute('end'),
+      );
     }
     return $results;
   }

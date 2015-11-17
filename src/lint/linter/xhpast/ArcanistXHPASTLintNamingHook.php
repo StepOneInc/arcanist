@@ -7,9 +7,8 @@
  * @task override   Overriding Symbol Name Lint Messages
  * @task util       Name Utilities
  * @task internal   Internals
- * @stable
  */
-abstract class ArcanistXHPASTLintNamingHook {
+abstract class ArcanistXHPASTLintNamingHook extends Phobject {
 
 
 /* -(  Internals  )---------------------------------------------------------- */
@@ -113,9 +112,29 @@ abstract class ArcanistXHPASTLintNamingHook {
    * @task util
    */
   public static function stripPHPFunction($symbol) {
-    // Allow initial "__" for magic methods like __construct; we could also
-    // enumerate these explicitly.
-    return preg_replace('/^__/', '', $symbol);
+    switch ($symbol) {
+      case '__assign_concat':
+      case '__call':
+      case '__callStatic':
+      case '__clone':
+      case '__concat':
+      case '__construct':
+      case '__debugInfo':
+      case '__destruct':
+      case '__get':
+      case '__invoke':
+      case '__isset':
+      case '__set':
+      case '__set_state':
+      case '__sleep':
+      case '__toString':
+      case '__unset':
+      case '__wakeup':
+        return preg_replace('/^__/', '', $symbol);
+
+      default:
+        return $symbol;
+    }
   }
 
   /**
