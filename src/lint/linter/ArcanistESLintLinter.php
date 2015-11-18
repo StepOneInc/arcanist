@@ -87,27 +87,23 @@ final class ArcanistESLintLinter extends ArcanistExternalLinter {
         return parent::setLinterConfigurationValue($key, $value);
     }
 
+    protected function intValOrNull($val) {
+        return $val ? intval($val) : null;
+    }
+
     protected function parseLinterOutput($path, $err, $stdout, $stderr) {
         $xml_result = new SimpleXMLElement($stdout);
-        $errors = array();
         $messages = array();
         foreach ($xml_result->file->issue as $issue) {
             $message = new ArcanistLintMessage();
             $message->setPath($path);
-            $message->setLine($issue['line']);
-            $message->setChar($issue['char']);
+            $message->setLine($this->intValOrNull($issue['line']));
+            $message->setChar($this->intValOrNull($issue['char']));
             $message->setName($issue['reason']);
             $message->setDescription("Evidence: " . $issue['evidence']);
             $message->setSeverity(ArcanistLintSeverity::SEVERITY_ERROR);
             $message->setCode(ArcanistLintSeverity::SEVERITY_ERROR);
             $messages[] = $message;
-        }
-        foreach ($errors as $err) {
-            $this->raiseLintAtLine(
-                $err['line'],
-                $err['col'],
-                self::ESLINT_ERROR,
-                $err['reason']);
         }
 
         return $messages;
